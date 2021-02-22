@@ -1,3 +1,5 @@
+import com.sun.org.apache.xpath.internal.operations.String;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.rmi.Naming;
@@ -8,7 +10,7 @@ public class RMIClient {
     public static void main(String[] args) {
 
         File filepath = new File(".\\Client\\files");
-        String contents[] = filepath.list();
+        java.lang.String[] contents = filepath.list();
 
         StorageInterface storage;
 
@@ -32,5 +34,25 @@ public class RMIClient {
         }
 
         catch(Exception e) {e.printStackTrace();}
+    }
+
+    public static void LaunchThread() throws InterruptedException {
+        int numMappers = 2;
+        int numReducers = 4;
+
+        thread = (Thread) run() -> {
+            RMIRegistry.main(new String[0]);
+            RMIStorage.main(new String[0]);
+
+            for(int i = 0; i < numMappers; i++) {
+                RMIMapper.main(new String[0]);
+            }
+            for(int i = 0; i < numReducers; i++) {
+                RMIReducer.main(new String[0]);
+            }
+            RMIMaster.main(new String[0]);
+        };
+        thread.start();
+        Thread.sleep(1000L);
     }
 }
