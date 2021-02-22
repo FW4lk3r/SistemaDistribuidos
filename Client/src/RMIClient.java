@@ -40,7 +40,7 @@ public class RMIClient {
         int numMappers = 2;
         int numReducers = 4;
 
-        thread = (Thread) run() -> {
+        thread = (Thread) run() => {
             RMIRegistry.main(new String[0]);
             RMIStorage.main(new String[0]);
 

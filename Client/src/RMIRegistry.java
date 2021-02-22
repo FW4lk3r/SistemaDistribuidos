@@ -18,7 +18,7 @@ public class RMIRegistry {
         }
 
         try{
-            Registry registry = new Registry();
+            Registry registry = new ObjectRegistry();
 
             r.rebind("Registry", registry);
 
