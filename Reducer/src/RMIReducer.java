@@ -1,10 +1,12 @@
+import com.sun.org.apache.xpath.internal.operations.String;
+
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class RMIReducer {
 
-    public static void main(String[] args) {
+    public static void main(String[] strings) {
         Registry r = null;
 
         try{
