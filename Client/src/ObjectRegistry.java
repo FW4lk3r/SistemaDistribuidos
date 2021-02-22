@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class ObjectRegistry extends UnicastRemoteObject implements RegistryInterface {
+public class ObjectRegistry extends UnicastRemoteObject implements ObjectRegistryInterface {
     static Map<Integer, String> hashMap = new TreeMap<>();
     static int length = 2;
 
@@ -37,14 +37,18 @@ public class ObjectRegistry extends UnicastRemoteObject implements RegistryInter
      * @param serverType
      * @throws RemoteException
      */
-    public int getNumServers(java.lang.String serverType) throws RemoteException{
+    public int getNumServers(String serverType) throws RemoteException{
+
         int numberOfServers = 0;
+
         ArrayList<Integer> keys = new ArrayList<>(hashMap.keySet());
+
         for(int i = keys.size()-1; i >= 0; i--){
             if(hashMap.get(keys.get(i)).contains(serverType)){
                 numberOfServers++;
             }
         }
+
         return numberOfServers;
     }
 }

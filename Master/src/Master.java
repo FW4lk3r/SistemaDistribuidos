@@ -7,4 +7,9 @@ public class Master extends UnicastRemoteObject implements MasterInterface {
 
     }
 
+    public static void ProcessData() {
+    }
+
+    public static void ProcessResults() {
+    }
 }

@@ -6,6 +6,7 @@ import java.rmi.registry.Registry;
 
 public class RMIRegistry {
 
+
     public RMIRegistry() {}
 
     public static void main(String[] args) {
@@ -18,7 +19,7 @@ public class RMIRegistry {
         }
 
         try{
-            Registry registry = new ObjectRegistry();
+            ObjectRegistry registry = new ObjectRegistry();
 
             r.rebind("Registry", registry);
 
