@@ -5,5 +5,6 @@ import java.rmi.Remote;
 public interface StorageInterface  extends Remote {
 
     void ReceivedFiles(String filename, byte[] array, int size) throws IOException;
-    void addFile(String path) throws IOException, NotBoundException;
+    void addFile(String path, String storageAddress) throws IOException, NotBoundException;
+
 }

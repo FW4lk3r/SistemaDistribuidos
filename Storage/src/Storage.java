@@ -37,30 +37,36 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
         out.write(array, 0, size);
         out.flush();
         out.close();
-
     }
 
     /**
      * @description Add the file to the repository
      * @param path
      */
-    public void addFile(String path) throws IOException, NotBoundException {
+    public void addFile(String path, String storageAddress) throws IOException, NotBoundException {
 
         System.out.println("Processing the har files.");
         File filepath = new File(path);
         java.lang.String[] contents = filepath.list();
-        StorageInterface storage = (StorageInterface) Naming.lookup("rmi://localhost:2026/storage");
+        StorageInterface storage = (StorageInterface) Naming.lookup(storageAddress);
 
-        for (int i = 0; i < contents.length; i++) {
-            File file = new File(path + contents[i]);
+        try {
+            for (int i = 0; i < contents.length; i++) {
+                File file = new File(path + contents[i]);
 
-            FileInputStream in = new FileInputStream(file);
+                FileInputStream in = new FileInputStream(file);
 
-            byte[] array = new byte[1024 * 1024];
-            int size = in.read(array);
-            storage.ReceivedFiles(contents[i], array, size);
-            System.out.println(contents[i]);
+                byte[] array = new byte[1024 * 1024];
+                int size = in.read(array);
+                storage.ReceivedFiles(contents[i], array, size);
+                System.out.println(contents[i]);
+            }
+        } catch (RemoteException e){
+            System.out.println(e.getMessage());
         }
+
+        catch(Exception e) { e.printStackTrace(); }
+
     }
 
     public void FillResourcesMap(String path, String fileName, LinkedHashMap<String, ArrayList<ResourceInfo>> timeHarMap) throws HarReaderException {
