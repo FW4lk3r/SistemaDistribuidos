@@ -13,8 +13,9 @@ public class Master extends UnicastRemoteObject implements MasterInterface {
     private static ObjectRegistryInterface objRegInt;
     private static File file;
 
-    protected Master() throws RemoteException, MalformedURLException, NotBoundException {
-
+    protected Master() throws RemoteException {
+        //TODO: set here the hashmaps
+        // hashMapMappers = hashmap;
     }
 
     public static void ProcessData(String registryAddress) throws RemoteException, NotBoundException, MalformedURLException {

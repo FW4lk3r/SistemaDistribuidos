@@ -1,10 +1,12 @@
+import harreader.HarReaderException;
+
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 
 public interface StorageInterface  extends Remote {
 
-    void ReceivedFiles(String filename, byte[] array, int size) throws IOException;
+    void ReceivedFilesClient(String filename, byte[] array, int size, int totalItems) throws IOException, HarReaderException;
     void addFile(String path, String storageAddress) throws IOException, NotBoundException;
 
 }

@@ -1,11 +1,15 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.*;
 
 public class Mapper extends UnicastRemoteObject implements MapperInterface {
 
-    protected Mapper() throws RemoteException
-    {
+    private static LinkedHashMap<String, ArrayList<ResourceInfo>> timeHarMap = new LinkedHashMap<>();
+    private Integer port;
 
+    protected Mapper(Integer port) throws RemoteException
+    {
+        this.port = port;
     }
 
     /**
@@ -14,13 +18,13 @@ public class Mapper extends UnicastRemoteObject implements MapperInterface {
      * @param length
      */
     public void FillDataTableOfFiles(int length) {
-        //TODO: add object divided with respective id in the hashmap
-
 
         //TODO: Call the Reducer
     }
 
-    public void DivideObjectsFilesFromTotalMappers() {
 
+    public void ReceiveStorageFromStorage(LinkedHashMap<String, ArrayList<ResourceInfo>> storageData) {
+        timeHarMap = storageData;
+        System.out.println("Mapper has receive the data.");
     }
 }

@@ -12,23 +12,29 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Storage extends UnicastRemoteObject implements StorageInterface {
 
+    private static LinkedHashMap<String, ArrayList<ResourceInfo>> clientData = new LinkedHashMap<>();
+    private String storageReceivedPath = ".\\Storage\\ReceivedFile\\";
+
     protected Storage() throws RemoteException {
 
     }
 
+    public  LinkedHashMap<String, ArrayList<ResourceInfo>> clientDataMap(){
+        return clientData;
+    }
+
     @Override
-    public void ReceivedFiles(String filename, byte[] array, int size) throws IOException {
+    public void ReceivedFilesClient(String filename, byte[] array, int size, int totalItems) throws IOException, HarReaderException {
 
-        String filepath = ".\\Storage\\ReceivedFile\\";
+        new File(storageReceivedPath).mkdirs();
 
-        new File(filepath).mkdirs();
-
-        File file = new File(filepath + filename);
+        File file = new File(storageReceivedPath + filename);
 
         file.createNewFile();
 
@@ -37,6 +43,10 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
         out.write(array, 0, size);
         out.flush();
         out.close();
+
+        LoadToMemory(totalItems, storageReceivedPath);
+
+        DivideResources(totalItems);
     }
 
     /**
@@ -58,7 +68,7 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
 
                 byte[] array = new byte[1024 * 1024];
                 int size = in.read(array);
-                storage.ReceivedFiles(contents[i], array, size);
+                storage.ReceivedFilesClient(contents[i], array, size, contents.length);
                 System.out.println(contents[i]);
             }
         } catch (RemoteException e){
@@ -67,6 +77,35 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
 
         catch(Exception e) { e.printStackTrace(); }
 
+    }
+
+    /**
+     * @description Divide the Array List in N Mappers
+     * @param length total of files
+     */
+    public void DivideResources(Integer length) {
+
+        HashMap<Integer, ArrayList<ResourceInfo>> halfHashMap = new HashMap<>();
+        HashMap<Integer, ArrayList<ResourceInfo>> halfHashMap2 = new HashMap<>();
+
+        for(int i = 0; i < clientData.size(); i++) {
+            ( i < (clientData.size()/length) ? halfHashMap:halfHashMap2)
+                    .put(Integer.parseInt(clientData.keySet().toString()), clientData.get(i));
+
+            System.out.println("ID of Resources:" + Integer.parseInt(clientData.keySet().toString()));
+        }
+    }
+
+    private void LoadToMemory(int length, String receivedFilePath) throws HarReaderException {
+        String fileName = "www_nytimes_com";
+        File filepath = new File(receivedFilePath);
+        String content[] = filepath.list();
+
+        if(length == 76)
+        {
+            FillResourcesMap(receivedFilePath, fileName, clientData);
+            System.out.println("Data loaded to memory by Storage(FilleResourcesMap)");
+        }
     }
 
     public void FillResourcesMap(String path, String fileName, LinkedHashMap<String, ArrayList<ResourceInfo>> timeHarMap) throws HarReaderException {

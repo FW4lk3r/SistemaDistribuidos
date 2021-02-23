@@ -15,7 +15,7 @@ public class RMIMapper {
         }
 
         try{
-            Mapper mapper = new Mapper();
+            Mapper mapper = new Mapper(dynamicPort);
             r.rebind(mapperTypeClass.toString(), mapper);
 
             ObjectRegistryInterface objRegInt = (ObjectRegistryInterface) Naming.lookup(registryAddress);
