@@ -3,11 +3,11 @@ import java.rmi.RemoteException;
 
 public interface ObjectRegistryInterface extends Remote {
 
-    String getObject(String s);
+    String getObject(String s) throws RemoteException;
 
     void addObject(String objectId, String ServerAddress) throws RemoteException;
 
     int getNumServers(String serverType) throws RemoteException;
 
-    int getLength();
+    int getLength() throws RemoteException;
 }
