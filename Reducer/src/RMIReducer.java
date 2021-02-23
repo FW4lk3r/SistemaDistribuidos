@@ -1,16 +1,14 @@
-import com.sun.org.apache.xpath.internal.operations.String;
-
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class RMIReducer {
 
-    public static void main(String[] strings) {
+    public static void main(Integer dynamicPort) {
         Registry r = null;
 
         try{
-            r = LocateRegistry.createRegistry(2025);
+            r = LocateRegistry.createRegistry(dynamicPort);
         }catch(RemoteException a){
             a.printStackTrace();
         }
