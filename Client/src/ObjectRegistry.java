@@ -1,4 +1,3 @@
-import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -15,26 +14,26 @@ public class ObjectRegistry extends UnicastRemoteObject implements ObjectRegistr
 
     /**
      * @description Add a server address to the hashmap Map.
-     * @param objectId
-     * @param ServerAddress
-     * @throws RemoteException
+     * @param objectId String
+     * @param ServerAddress String
+     * @throws RemoteException RemoteException
      */
-    public void addObject(java.lang.String objectId, String ServerAddress) throws RemoteException{
+    public void addObject(String objectId, String ServerAddress) throws RemoteException{
         hashMap.put(Integer.parseInt(objectId), ServerAddress);
     }
 
     /**
      * @description Return the RMI address given yours ID.
-     * @param objectId
+     * @param objectId String
      * @return
      */
-    public String getObject(java.lang.String objectId){
+    public String getObject(String objectId){
         return (String) hashMap.get(Integer.parseInt(objectId));
     }
 
     /***
      * @description Return the number of servers of a type ex. mapper, reducer
-     * @param serverType
+     * @param serverType String
      * @throws RemoteException
      */
     public int getNumServers(String serverType) throws RemoteException{
@@ -52,6 +51,10 @@ public class ObjectRegistry extends UnicastRemoteObject implements ObjectRegistr
         return numberOfServers;
     }
 
+    /**
+     *
+     * @return int
+     */
     public int getLength() {
         return length;
     }
