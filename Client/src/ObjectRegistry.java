@@ -1,4 +1,4 @@
-import com.sun.org.apache.xpath.internal.operations.String;
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -6,11 +6,11 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class ObjectRegistry extends UnicastRemoteObject implements ObjectRegistryInterface {
+    private static final long serialVersionUID = 1l;
     static Map<Integer, String> hashMap = new TreeMap<>();
     static int length = 2;
 
     protected ObjectRegistry() throws RemoteException {
-
     }
 
     /**
@@ -50,5 +50,9 @@ public class ObjectRegistry extends UnicastRemoteObject implements ObjectRegistr
         }
 
         return numberOfServers;
+    }
+
+    public int getLength() {
+        return length;
     }
 }
