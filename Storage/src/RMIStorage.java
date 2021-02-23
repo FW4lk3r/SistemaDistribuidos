@@ -1,5 +1,3 @@
-import com.sun.org.apache.xpath.internal.operations.String;
-
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -10,7 +8,7 @@ public class RMIStorage {
         Registry r = null;
 
         try{
-            r = LocateRegistry.createRegistry(2026);
+            r = LocateRegistry.createRegistry(2022);
         }catch(RemoteException a){
             a.printStackTrace();
         }

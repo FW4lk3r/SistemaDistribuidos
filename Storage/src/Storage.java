@@ -46,6 +46,7 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
      */
     public void addFile(String path) throws IOException, NotBoundException {
 
+        System.out.println("Processing the har files.");
         File filepath = new File(path);
         java.lang.String[] contents = filepath.list();
         StorageInterface storage = (StorageInterface) Naming.lookup("rmi://localhost:2026/storage");
