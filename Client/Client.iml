@@ -8,5 +8,8 @@
     <orderEntry type="jdk" jdkName="1.8.0_201" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Storage" />
+    <orderEntry type="module" module-name="Reducer" />
+    <orderEntry type="module" module-name="Mapper" />
+    <orderEntry type="module" module-name="Master" />
   </component>
 </module>
