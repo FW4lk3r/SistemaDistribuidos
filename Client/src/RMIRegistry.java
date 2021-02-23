@@ -7,11 +7,12 @@ public class RMIRegistry {
 
     public RMIRegistry() {}
 
-    public static void main(String[] args) {
+    public static void main(RMIClient.TYPECLASS registryTypeClass) {
         Registry r = null;
+        Integer port = 2023;
 
         try {
-            r = LocateRegistry.createRegistry(2023);
+            r = LocateRegistry.createRegistry(port);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -19,11 +20,11 @@ public class RMIRegistry {
         try{
             ObjectRegistry registry = new ObjectRegistry();
 
-            r.rebind("Registry", registry);
+            r.rebind(registryTypeClass.toString(), registry);
 
-            System.out.println("Registry ready");
+            System.out.println(registryTypeClass.toString().toUpperCase() + " ready");
         }catch(Exception e) {
-            System.out.println("Registry main " + e.getMessage());
+            System.out.println(registryTypeClass.toString().toUpperCase() + " main " + e.getMessage());
         }
     }
 }

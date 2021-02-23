@@ -1,10 +1,11 @@
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class RMIMapper {
 
-    public static void main(Integer dynamicPort) {
+    public static void main(RMIClient.TYPECLASS mapperTypeClass, String registryAddress, Integer dynamicPort) {
         Registry r = null;
 
         try{
@@ -15,11 +16,14 @@ public class RMIMapper {
 
         try{
             Mapper mapper = new Mapper();
-            r.rebind("mapper", mapper);
+            r.rebind(mapperTypeClass.toString(), mapper);
 
-            System.out.println("Mapper ready");
+            ObjectRegistryInterface objRegInt = (ObjectRegistryInterface) Naming.lookup(registryAddress);
+            objRegInt.addObject(String.valueOf(dynamicPort), "rmi://localhost:" + dynamicPort + "/" + mapperTypeClass);
+
+            System.out.println(mapperTypeClass.toString().toUpperCase() + " ready");
         }catch(Exception e) {
-            System.out.println("Mapper main " + e.getMessage());
+            System.out.println(mapperTypeClass.toString().toUpperCase() + " main " + e.getMessage());
         }
     }
 }

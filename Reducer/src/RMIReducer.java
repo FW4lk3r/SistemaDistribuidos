@@ -1,10 +1,11 @@
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class RMIReducer {
 
-    public static void main(Integer dynamicPort) {
+    public static void main(RMIClient.TYPECLASS reducerTypeClass, String registryAddress, Integer dynamicPort) {
         Registry r = null;
 
         try{
@@ -15,11 +16,14 @@ public class RMIReducer {
 
         try{
             Reducer reducer = new Reducer();
-            r.rebind("reducer", reducer);
+            r.rebind(reducerTypeClass.toString(), reducer);
 
-            System.out.println("Reducer ready");
+            ObjectRegistryInterface objRegInt = (ObjectRegistryInterface) Naming.lookup(registryAddress);
+            objRegInt.addObject(String.valueOf(dynamicPort), "rmi://localhost:" + dynamicPort + "/" + reducerTypeClass);
+
+            System.out.println(reducerTypeClass.toString().toUpperCase() + " ready");
         }catch(Exception e) {
-            System.out.println("Reducer main " + e.getMessage());
+            System.out.println(reducerTypeClass.toString().toUpperCase() + " main " + e.getMessage());
         }
     }
 }
