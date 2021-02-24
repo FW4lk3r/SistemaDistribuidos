@@ -11,22 +11,22 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Storage extends UnicastRemoteObject implements StorageInterface {
 
-    private static LinkedHashMap<String, ArrayList<ResourceInfo>> clientData = new LinkedHashMap<>();
+    private static LinkedHashMap<Integer, ArrayList<ResourceInfo>> MapperResource = new LinkedHashMap<>();
+    private static LinkedHashMap<Integer, ArrayList<ResourceInfo>> ReducerCombinations = new LinkedHashMap<>();
+    private static LinkedHashMap<Integer, ArrayList<ResourceInfo>> ResourceInfo = new LinkedHashMap<>();
+    private static ArrayList<ProcessCombinationModel> CombinationModel = new ArrayList<>();
+
+    private static ArrayList<ResourceInfo> DataClient = new ArrayList<>();
+
     private String storageReceivedPath = ".\\Storage\\ReceivedFile\\";
 
     protected Storage() throws RemoteException {
 
-    }
-
-    public  LinkedHashMap<String, ArrayList<ResourceInfo>> clientDataMap(){
-        return clientData;
     }
 
     @Override
@@ -44,9 +44,9 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
         out.flush();
         out.close();
 
-        LoadToMemory(totalItems, storageReceivedPath);
+        FillResourcesMap(storageReceivedPath, filename.substring(0, filename.lastIndexOf("_")), ResourceInfo);
 
-        DivideResources(totalItems);
+        //DivideResources(totalItems);
     }
 
     /**
@@ -85,30 +85,22 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
      */
     public void DivideResources(Integer length) {
 
-        HashMap<Integer, ArrayList<ResourceInfo>> halfHashMap = new HashMap<>();
-        HashMap<Integer, ArrayList<ResourceInfo>> halfHashMap2 = new HashMap<>();
+        ArrayList<ResourceInfo> ResourcesOriginals = new ArrayList<>();;
+        ArrayList<ResourceInfo> ResourcesCopy = ResourcesOriginals;
 
-        for(int i = 0; i < clientData.size(); i++) {
-            ( i < (clientData.size()/length) ? halfHashMap:halfHashMap2)
-                    .put(Integer.parseInt(clientData.keySet().toString()), clientData.get(i));
+        //Getting Collection of keys from HashMap
+        Collection<ArrayList<ResourceInfo>> keySet = ResourceInfo.values();
 
-            System.out.println("ID of Resources:" + Integer.parseInt(clientData.keySet().toString()));
-        }
+        //Creating an ArrayList of keys by passing the keySet
+        //ArrayList<ResourceInfo> listOfValues = new ArrayList<ResourceInfo>((Collection<? extends ResourceInfo>) Arrays.asList(keySet));
     }
 
-    private void LoadToMemory(int length, String receivedFilePath) throws HarReaderException {
-        String fileName = "www_nytimes_com";
-        File filepath = new File(receivedFilePath);
-        String content[] = filepath.list();
-
-        if(length == 76)
-        {
-            FillResourcesMap(receivedFilePath, fileName, clientData);
-            System.out.println("Data loaded to memory by Storage(FilleResourcesMap)");
-        }
+    @Override
+    public ArrayList<ResourceInfo> returnDataStorage() throws RemoteException {
+        return DataClient;
     }
 
-    public void FillResourcesMap(String path, String fileName, LinkedHashMap<String, ArrayList<ResourceInfo>> timeHarMap) throws HarReaderException {
+    public void FillResourcesMap(String path, String fileName, LinkedHashMap<Integer, ArrayList<ResourceInfo>> ResourceInfo) throws HarReaderException {
         int[] count = new int[]{0};
         int fileCount = 0;
         try {
@@ -125,8 +117,8 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
                         resourceInfo.resourceLength = otherEntry.getResponse().getBodySize();
                         resourceInfo.harRun = fileCount;
 
-                        if (timeHarMap.containsKey(otherEntry.getRequest().getUrl())) {
-                            ArrayList<ResourceInfo> list = timeHarMap.get(otherEntry.getRequest().getUrl());
+                        if (ResourceInfo.containsKey(otherEntry.getRequest().getUrl())) {
+                            ArrayList<ResourceInfo> list = ResourceInfo.get(otherEntry.getRequest().getUrl());
                             AtomicBoolean repeatedCall = new AtomicBoolean(false);
                             list.forEach(value -> {
                                 if (value.resourceTime.equals(resourceInfo.resourceTime)) {
@@ -135,11 +127,11 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
                                 }
                             });
                             if (!repeatedCall.get())
-                                timeHarMap.get(otherEntry.getRequest().getUrl()).add(resourceInfo);
+                                ResourceInfo.get(otherEntry.getRequest().getUrl()).add(resourceInfo);
                         } else {
                             ArrayList<ResourceInfo> l = new ArrayList<>();
                             l.add(resourceInfo);
-                            timeHarMap.put(otherEntry.getRequest().getUrl(), l);
+                            ResourceInfo.put(Integer.parseInt(otherEntry.getRequest().getUrl()), l);
                         }
 
                     }
