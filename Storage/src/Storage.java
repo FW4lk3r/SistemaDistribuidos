@@ -13,16 +13,16 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 public class Storage extends UnicastRemoteObject implements StorageInterface {
 
     private static LinkedHashMap<Integer, ArrayList<ResourceInfo>> MapperResource = new LinkedHashMap<>();
+    private static ArrayList<ResourceInfo> ResourceInfoCopy = new ArrayList<>();
     private static LinkedHashMap<Integer, ArrayList<ResourceInfo>> ReducerCombinations = new LinkedHashMap<>();
-    private static LinkedHashMap<Integer, ArrayList<ResourceInfo>> ResourceInfo = new LinkedHashMap<>();
+    private static LinkedHashMap<String, ArrayList<ResourceInfo>> ResourceInfoData = new LinkedHashMap<>();
     private static ArrayList<ProcessCombinationModel> CombinationModel = new ArrayList<>();
 
-    private static ArrayList<ResourceInfo> DataClient = new ArrayList<>();
+    private static LinkedHashMap<Integer, ArrayList<ResourceInfo>> DataClient = new LinkedHashMap<>();
 
     private String storageReceivedPath = ".\\Storage\\ReceivedFile\\";
 
@@ -37,6 +37,8 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
 
         File file = new File(storageReceivedPath + filename);
 
+        System.out.println("File name" + file.getName());
+
         file.createNewFile();
 
         FileOutputStream out = new FileOutputStream(file, true);
@@ -45,7 +47,7 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
         out.flush();
         out.close();
 
-        FillResourcesMap(storageReceivedPath, filename.substring(0, filename.lastIndexOf("_")), ResourceInfo);
+        FillResourcesMap(storageReceivedPath, filename.substring(0, filename.lastIndexOf("_")));
 
         //DivideResources(totalItems);
     }
@@ -83,43 +85,95 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
     /**
      * @description Divide the Array List in N Mappers
      *
+     * @return
      */
-    public void DivideResources() {
+    public LinkedHashMap<Integer, ArrayList<ResourceInfo>> DivideResources() {
 
         System.out.println("Starting the division of resources.");
+        System.out.println("Resource Info size:" + ResourceInfoData.size());
 
-        ArrayList<ResourceInfo> ResourcesOriginals = new ArrayList<>();;
+        Integer sizeResourceInfo = ResourceInfoData.size();
+        Integer numberItem = sizeResourceInfo / 2;
+        Boolean isPar =  (sizeResourceInfo % 2) != 0;
+
+        //private static LinkedHashMap<Integer, ArrayList<ResourceInfo>> MapperResource = new LinkedHashMap<>();
+
+        Integer count = 0;
+
+        for(int i = 0; i < sizeResourceInfo; i++){
+
+            for(int j = 0; j < numberItem; j++) {
+                System.out.println("Entrei no for" + j);
+                MapperResource.put(i, ResourceInfoData.get(count));
+                count++;
+            }
+
+        }
+        if(!isPar) {
+            MapperResource.put((Integer) MapperResource.keySet().toArray()[1], ResourceInfoData.get(sizeResourceInfo));
+        }
+
+        /*ArrayList<ResourceInfo> ResourcesOriginals = new ArrayList<>();
         ArrayList<ResourceInfo> ResourcesCopy = ResourcesOriginals;
 
         //Getting Collection of keys from HashMap
-        Set<ArrayList<ResourceInfo>> test = new HashSet<>(ResourceInfo.values());
+        Set<ArrayList<ResourceInfo>> test = new HashSet<>(ResourceInfoData.values());
 
         List<ArrayList<ResourceInfo>> listTest = test.stream().collect(Collectors.toList());
 
-        for(int i = 0; i < listTest.size(); i++){
-            System.out.println(listTest.get(i));
-            //ResourcesCopy.add();
+
+        for (Map.Entry me : ResourceInfoData.entrySet()) {
+            System.out.println("Key: "+me.getKey() + " & Value: " + me.getValue());
+            ResourcesCopy.addAll((Collection<? extends ResourceInfo>) me.getValue());
+        }*/
+
+        ArrayList<Integer> resourcePorMapper = new ArrayList<>();
+        int numMappers= 2;
+        int numResources = copyResources.size();
+
+        int resourcesPerMapper = numMappers/ resources);
+        int remainingResources = (numItems % numBuckets);
+
+        for (int i = 1; i <= numMappers; i++)
+        {
+            int extra = (i <= remainingResources) ? 1:0;
+            resourcePorMapper.add((itemsPerBucket + extra));
         }
-        //ResourcesCopy = listTest;
+
+        for(int i=0;i<resourcePorMapper.size();i++){
+
+            System.out.println("\nmapper com "+ resourcePorMapper[i] +" recursos");
+        }
+
+        System.out.println("Size of MapperResource" +  MapperResource.size());
+        Set keyset = MapperResource.keySet();
+        Integer valuesKeySet = keyset.size();
+
+        for(Integer i = 0; i < MapperResource.size(); i++) {
+            System.out.println("----> " + MapperResource.get(keyset.toArray()[i]));
+        }
+
+        return MapperResource;
     }
 
     @Override
-    public ArrayList<ResourceInfo> returnDataStorage() throws RemoteException {
-        DivideResources();
+    public LinkedHashMap<Integer, ArrayList<ResourceInfo>> returnDataStorage() throws RemoteException {
+        DataClient = DivideResources();
         return DataClient;
     }
 
-    public void ReceivedCombinations(ArrayList<ProcessCombinationModel> combinationStatistics){
+    public void ReceivedCombinations(ArrayList<ProcessCombinationModel> combinationStatistics) throws RemoteException{
         CombinationModel = combinationStatistics;
     }
 
-    public void FillResourcesMap(String path, String fileName, LinkedHashMap<Integer, ArrayList<ResourceInfo>> ResourceInfo) throws HarReaderException {
+    public void FillResourcesMap(String path, String fileName) throws HarReaderException {
         int[] count = new int[]{0};
         int fileCount = 0;
         try {
             HarReader harReader = new HarReader();
             File file = new File(path + fileName + ".har");
             while (file.exists()){
+                //System.out.println("Enter in the while");
                 Har otherHar = harReader.readFromFile(file);
                 for (HarEntry otherEntry : otherHar.getLog().getEntries()) {
                     if (!otherEntry.getResponse().getHeaders().get(0).getValue().contains("no-cache")) {
@@ -130,8 +184,8 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
                         resourceInfo.resourceLength = otherEntry.getResponse().getBodySize();
                         resourceInfo.harRun = fileCount;
 
-                        if (ResourceInfo.containsKey(otherEntry.getRequest().getUrl())) {
-                            ArrayList<ResourceInfo> list = ResourceInfo.get(otherEntry.getRequest().getUrl());
+                        if (ResourceInfoData.containsKey(otherEntry.getRequest().getUrl())) {
+                            ArrayList<ResourceInfo> list = ResourceInfoData.get(otherEntry.getRequest().getUrl());
                             AtomicBoolean repeatedCall = new AtomicBoolean(false);
                             list.forEach(value -> {
                                 if (value.resourceTime.equals(resourceInfo.resourceTime)) {
@@ -140,11 +194,13 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
                                 }
                             });
                             if (!repeatedCall.get())
-                                ResourceInfo.get(otherEntry.getRequest().getUrl()).add(resourceInfo);
+                                ResourceInfoData.get(otherEntry.getRequest().getUrl()).add(resourceInfo);
                         } else {
                             ArrayList<ResourceInfo> l = new ArrayList<>();
                             l.add(resourceInfo);
-                            ResourceInfo.put(Integer.parseInt(otherEntry.getRequest().getUrl()), l);
+                            //System.out.println("Entry: " + otherEntry.getRequest().getUrl());
+                            ResourceInfoData.put(otherEntry.getRequest().getUrl(), l);
+                            ResourceInfoCopy.add(resourceInfo);
                         }
 
                     }

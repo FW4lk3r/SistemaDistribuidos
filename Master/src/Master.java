@@ -5,6 +5,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class Master extends UnicastRemoteObject implements MasterInterface {
     private static ArrayList<String> Mappers = new ArrayList<>();
@@ -50,14 +51,14 @@ public class Master extends UnicastRemoteObject implements MasterInterface {
         String portStorage = objRegInt.getObject("2022");
         storageInterface = (StorageInterface) Naming.lookup(portStorage);
 
-        ArrayList<ResourceInfo> data = storageInterface.returnDataStorage();
+        LinkedHashMap<Integer, ArrayList<ResourceInfo>> data = storageInterface.returnDataStorage();
 
         System.out.println("Mapper size (" + Mappers.size() + ")");
 
         for(int i = 0; i < Mappers.size(); i++){
             mapperAddress = Mappers.get(i);
             mapperInterface = (MapperInterface) Naming.lookup(mapperAddress);
-            mapperInterface.ReceiveStorageFromMaster(data);
+            //mapperInterface.ReceiveStorageFromMaster(data);
         }
 
 
