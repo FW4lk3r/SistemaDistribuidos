@@ -7,7 +7,7 @@ import java.util.*;
 
 public class Mapper extends UnicastRemoteObject implements MapperInterface {
 
-    private static ArrayList<ResourceInfo> timerHarMap = new ArrayList<>();
+    private ArrayList<ResourceInfo> Mapper = new ArrayList<>();
     private Integer port;
 
     protected Mapper(Integer port) throws RemoteException
@@ -17,16 +17,19 @@ public class Mapper extends UnicastRemoteObject implements MapperInterface {
 
     public void ReceiveStorageFromMaster(ArrayList<ResourceInfo> storageData) {
         System.out.println("Mapper(" + this.port + ") has receive the data.");
-        timerHarMap = storageData;
+        Mapper = storageData;
     }
 
-    /*
-    private Set<Set<String>> getCombinations(int len) {
-        ArrayList<String> resources= new ArrayList<>(timerHarMap.keySet());
-
-        System.out.println("Number of resources: " + resources.size());
-        Set<Set<String>> combinations = Sets.combinations(ImmutableSet.copyOf(resources), len);
+    /**
+     * Compute statistics for each combination
+     * @param len number of combinations
+     * @param fileCount number of files (i.e., runs)
+     */
+    public Set<Set<ResourceInfo>> combinations(int len, int fileCount) {
+        ArrayList<ResourceInfo> resources = new ArrayList<>(Mapper.keySet());
+        System.out.println("Number of resources " + resources.size());
+        Set<Set<ResourceInfo>> combinations = Sets.combinations(ImmutableSet.copyOf(resources), len);
 
         return combinations;
-    }*/
+    }
 }
