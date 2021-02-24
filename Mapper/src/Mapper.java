@@ -1,10 +1,13 @@
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
 public class Mapper extends UnicastRemoteObject implements MapperInterface {
 
-    private static LinkedHashMap<String, ArrayList<ResourceInfo>> timeHarMap = new LinkedHashMap<>();
+    private static ArrayList<ResourceInfo> timerHarMap = new ArrayList<>();
     private Integer port;
 
     protected Mapper(Integer port) throws RemoteException
@@ -12,19 +15,18 @@ public class Mapper extends UnicastRemoteObject implements MapperInterface {
         this.port = port;
     }
 
-    /**
-     * @description Add to the hashmap the respective Id
-     * and Object divided by the total of mappers
-     * @param length
-     */
-    public void FillDataTableOfFiles(int length) {
-
-        //TODO: Call the Reducer
+    public void ReceiveStorageFromMaster(ArrayList<ResourceInfo> storageData) {
+        System.out.println("Mapper(" + this.port + ") has receive the data.");
+        timerHarMap = storageData;
     }
 
+    /*
+    private Set<Set<String>> getCombinations(int len) {
+        ArrayList<String> resources= new ArrayList<>(timerHarMap.keySet());
 
-    public void ReceiveStorageFromStorage(LinkedHashMap<String, ArrayList<ResourceInfo>> storageData) {
-        timeHarMap = storageData;
-        System.out.println("Mapper has receive the data.");
-    }
+        System.out.println("Number of resources: " + resources.size());
+        Set<Set<String>> combinations = Sets.combinations(ImmutableSet.copyOf(resources), len);
+
+        return combinations;
+    }*/
 }
