@@ -4,40 +4,66 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.ArrayList;
 
 public class Master extends UnicastRemoteObject implements MasterInterface {
-    static Map<Integer, String> hashMapMappers = new TreeMap<>();
+    private static ArrayList<String> Mappers = new ArrayList<>();
+    private static ArrayList<String> Reducers = new ArrayList<>();
+
     private static MapperInterface mapperInterface;
+    private static ReducerInterface reducerInterface;
+    private static StorageInterface storageInterface;
+
     private static ObjectRegistryInterface objRegInt;
+
     private static File file;
 
     protected Master() throws RemoteException {
-        //TODO: set here the hashmaps
-        // hashMapMappers = hashmap;
+
     }
 
-    public static void ProcessData(String registryAddress) throws RemoteException, NotBoundException, MalformedURLException {
+    public void setHashMaps(RMIClient.TYPECLASS mapperTypeClass, RMIClient.TYPECLASS reducerTypeClass, String registryAddress) throws RemoteException, NotBoundException, MalformedURLException {
+
+        ObjectRegistryInterface objRegInt = (ObjectRegistryInterface) Naming.lookup(registryAddress);
+
+        for (int i = 0 ; i < objRegInt.getNumServers(mapperTypeClass.toString()); i++)
+        {
+            String port = String.valueOf(2025 + i);
+            Mappers.add(objRegInt.getObject(port));
+        }
+
+        for (int i = 0 ; i < objRegInt.getNumServers(reducerTypeClass.toString()); i++)
+        {
+            String port = String.valueOf(2030 + i);
+            Reducers.add(objRegInt.getObject(port));
+        }
+
+    }
+
+    public void ProcessData(String registryAddress) throws RemoteException, NotBoundException, MalformedURLException {
         System.out.println("Starting the process of your data");
 
         String mapperAddress = null;
 
         objRegInt = (ObjectRegistryInterface) Naming.lookup(registryAddress);
 
-        int length = objRegInt.getLength();
+        String portStorage = objRegInt.getObject("2022");
+        storageInterface = (StorageInterface) Naming.lookup(portStorage);
 
-        System.out.println("Starting the process of your data");
-        for(int i = 0; i < hashMapMappers.size(); i++){
-            mapperAddress = objRegInt.getObject(hashMapMappers.get(i));
+        ArrayList<ResourceInfo> data = storageInterface.returnDataStorage();
+
+        System.out.println("Mapper size (" + Mappers.size() + ")");
+
+        for(int i = 0; i < Mappers.size(); i++){
+            mapperAddress = Mappers.get(i);
             mapperInterface = (MapperInterface) Naming.lookup(mapperAddress);
-            mapperInterface.FillDataTableOfFiles(length);
+            mapperInterface.ReceiveStorageFromMaster(data);
         }
 
         System.out.println("Data process with success");
     }
 
-    public static void ProcessResults(String registryAddress, String path) throws RemoteException, NotBoundException, MalformedURLException {
+    public void ProcessResults(String registryAddress, String path) throws RemoteException, NotBoundException, MalformedURLException {
 
         objRegInt = (ObjectRegistryInterface) Naming.lookup(registryAddress);
         StorageInterface storageInt = (StorageInterface) Naming.lookup(objRegInt.getObject("2022"));
