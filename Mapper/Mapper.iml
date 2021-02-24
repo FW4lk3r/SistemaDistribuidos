@@ -9,5 +9,13 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Storage" />
     <orderEntry type="module" module-name="Client" />
+    <orderEntry type="library" name="com.fasterxml.jackson.core:jackson-annotations:2.11.1" level="project" />
+    <orderEntry type="library" name="com.google.code.findbugs:jsr305:3.0.2" level="project" />
+    <orderEntry type="library" name="com.google.errorprone:error_prone_annotations:2.2.0" level="project" />
+    <orderEntry type="library" name="com.google.guava:failureaccess:1.0.1" level="project" />
+    <orderEntry type="library" name="com.google.guava:guava:27.0.1-jre" level="project" />
+    <orderEntry type="library" name="com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />
+    <orderEntry type="library" name="com.google.j2objc:j2objc-annotations:1.1" level="project" />
+    <orderEntry type="library" name="com.googlecode.json-simple:json-simple:1.1" level="project" />
   </component>
 </module>
