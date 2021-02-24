@@ -71,4 +71,8 @@ public class RMIClient {
         thread.start();
         Thread.sleep(1000L);
     }
+
+    public static void getComputaionalResultsFromMaster(String name, byte[] data, int length) {
+        System.out.println("Return data");
+    }
 }

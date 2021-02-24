@@ -1,11 +1,12 @@
 import java.io.File;
+import java.io.FileInputStream;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 public class Master extends UnicastRemoteObject implements MasterInterface {
     private static ArrayList<String> Mappers = new ArrayList<>();
@@ -17,7 +18,7 @@ public class Master extends UnicastRemoteObject implements MasterInterface {
 
     private static ObjectRegistryInterface objRegInt;
 
-    private static File file;
+    private File file;
 
     protected Master() throws RemoteException {
 
@@ -51,17 +52,15 @@ public class Master extends UnicastRemoteObject implements MasterInterface {
         String portStorage = objRegInt.getObject("2022");
         storageInterface = (StorageInterface) Naming.lookup(portStorage);
 
-        LinkedHashMap<Integer, ArrayList<ResourceInfo>> data = storageInterface.returnDataStorage();
+        ArrayList<Integer> data = storageInterface.returnDataStorage();
 
         System.out.println("Mapper size (" + Mappers.size() + ")");
 
         for(int i = 0; i < Mappers.size(); i++){
             mapperAddress = Mappers.get(i);
             mapperInterface = (MapperInterface) Naming.lookup(mapperAddress);
-            //mapperInterface.ReceiveStorageFromMaster(data);
+            mapperInterface.sendReducer(data, registryAddress);
         }
-
-
 
         System.out.println("Data process with success");
     }
@@ -69,10 +68,13 @@ public class Master extends UnicastRemoteObject implements MasterInterface {
     public void ProcessResults(String registryAddress, String path) throws RemoteException, NotBoundException, MalformedURLException {
 
         objRegInt = (ObjectRegistryInterface) Naming.lookup(registryAddress);
-        StorageInterface storageInt = (StorageInterface) Naming.lookup(objRegInt.getObject("2022"));
+        StorageInterface storageInterface = (StorageInterface) Naming.lookup(objRegInt.getObject("2022"));
 
-        //Todo: End this
-        //LinkedList<ProcessCombinationModel> combinationResults = storageInt.getCombinationResults();
+        //LinkedList<ProcessCombinationModel> combinationResults = storageInterface.getCombinationResults();
+
+        CsvWriter csWriter = new CsvWriter();
+        //group Filipe Ferreira / Emanuel Pereira
+        //csWriter.SaveResourcesCombinationsProbabilities(combinationResults, "groupFFEP");
 
         file = new File(path);
         sendFilesToClient();
@@ -80,7 +82,19 @@ public class Master extends UnicastRemoteObject implements MasterInterface {
         System.out.println("You can see the results in this directory:" + path);
     }
 
-    private static void sendFilesToClient() {
+    private void sendFilesToClient() {
         System.out.println("Send the files to the Client");
+        try {
+            File file_input = (File) this.file;
+            FileInputStream input = new FileInputStream(file_input);
+            byte[] data = new byte[1048576];
+
+            for(int length = input.read(data); length > 0; length = input.read(data)){
+                RMIClient.getComputaionalResultsFromMaster(file_input.getName(), data, length);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
