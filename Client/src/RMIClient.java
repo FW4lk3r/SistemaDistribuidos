@@ -12,7 +12,6 @@ public class RMIClient {
         master,
         mapper
     }
-
     public static void main(String[] args) throws InterruptedException {
 
         LaunchThread();

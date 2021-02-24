@@ -17,5 +17,6 @@
     <orderEntry type="library" name="com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />
     <orderEntry type="library" name="com.google.j2objc:j2objc-annotations:1.1" level="project" />
     <orderEntry type="library" name="com.googlecode.json-simple:json-simple:1.1" level="project" />
+    <orderEntry type="module" module-name="Reducer" />
   </component>
 </module>

@@ -60,6 +60,8 @@ public class Master extends UnicastRemoteObject implements MasterInterface {
             mapperInterface.ReceiveStorageFromMaster(data);
         }
 
+
+
         System.out.println("Data process with success");
     }
 
