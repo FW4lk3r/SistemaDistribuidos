@@ -9,5 +9,4 @@ public interface ObjectRegistryInterface extends Remote {
 
     int getNumServers(String serverType) throws RemoteException;
 
-    int getLength() throws RemoteException;
 }

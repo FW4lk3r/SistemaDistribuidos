@@ -28,7 +28,7 @@ public class ObjectRegistry extends UnicastRemoteObject implements ObjectRegistr
      * @return
      */
     public String getObject(String objectId){
-        return (String) hashMap.get(Integer.parseInt(objectId));
+        return hashMap.get(Integer.parseInt(objectId));
     }
 
     /***
@@ -51,11 +51,4 @@ public class ObjectRegistry extends UnicastRemoteObject implements ObjectRegistr
         return numberOfServers;
     }
 
-    /**
-     *
-     * @return int
-     */
-    public int getLength() {
-        return length;
-    }
 }
