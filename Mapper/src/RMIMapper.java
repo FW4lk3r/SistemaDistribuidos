@@ -21,7 +21,7 @@ public class RMIMapper {
             ObjectRegistryInterface objRegInt = (ObjectRegistryInterface) Naming.lookup(registryAddress);
             objRegInt.addObject(String.valueOf(dynamicPort), "rmi://localhost:" + dynamicPort + "/" + mapperTypeClass);
 
-            System.out.println(mapperTypeClass.toString().toUpperCase() + " ready");
+            System.out.println(mapperTypeClass.toString().toUpperCase() + " ready with port:" + dynamicPort);
         }catch(Exception e) {
             System.out.println(mapperTypeClass.toString().toUpperCase() + " main " + e.getMessage());
         }

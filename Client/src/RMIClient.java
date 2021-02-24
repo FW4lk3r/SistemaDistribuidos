@@ -13,7 +13,6 @@ public class RMIClient {
         mapper
     }
 
-
     public static void main(String[] args) throws InterruptedException {
 
         LaunchThread();
@@ -31,11 +30,14 @@ public class RMIClient {
 
             interfaceStorage.addFile(path, storageAddress);
 
+            //Set the HashMaps in the master
+            interfaceMaster.setHashMaps(TYPECLASS.mapper, TYPECLASS.reducer, registryAddress);
+
             //Start the process of the Data
-            Master.ProcessData(registryAddress);
+            interfaceMaster.ProcessData(registryAddress);
 
             //Return the results to the client
-            Master.ProcessResults(registryAddress, path);
+            interfaceMaster.ProcessResults(registryAddress, path);
 
         }
 
@@ -63,6 +65,7 @@ public class RMIClient {
                 for(int i = 0; i < numReducers; i++) {
                     RMIReducer.main(TYPECLASS.reducer, registryAddress, 2030 + i);
                 }
+
                 RMIMaster.main(TYPECLASS.master, registryAddress);
             }
         };

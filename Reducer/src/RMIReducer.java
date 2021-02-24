@@ -15,13 +15,13 @@ public class RMIReducer {
         }
 
         try{
-            Reducer reducer = new Reducer();
+            Reducer reducer = new Reducer(dynamicPort);
             r.rebind(reducerTypeClass.toString(), reducer);
 
             ObjectRegistryInterface objRegInt = (ObjectRegistryInterface) Naming.lookup(registryAddress);
             objRegInt.addObject(String.valueOf(dynamicPort), "rmi://localhost:" + dynamicPort + "/" + reducerTypeClass);
 
-            System.out.println(reducerTypeClass.toString().toUpperCase() + " ready");
+            System.out.println(reducerTypeClass.toString().toUpperCase() + " ready with port:" + dynamicPort);
         }catch(Exception e) {
             System.out.println(reducerTypeClass.toString().toUpperCase() + " main " + e.getMessage());
         }
