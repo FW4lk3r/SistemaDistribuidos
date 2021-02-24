@@ -13,6 +13,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class Storage extends UnicastRemoteObject implements StorageInterface {
 
@@ -81,23 +82,35 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
 
     /**
      * @description Divide the Array List in N Mappers
-     * @param length total of files
+     *
      */
-    public void DivideResources(Integer length) {
+    public void DivideResources() {
+
+        System.out.println("Starting the division of resources.");
 
         ArrayList<ResourceInfo> ResourcesOriginals = new ArrayList<>();;
         ArrayList<ResourceInfo> ResourcesCopy = ResourcesOriginals;
 
         //Getting Collection of keys from HashMap
-        Collection<ArrayList<ResourceInfo>> keySet = ResourceInfo.values();
+        Set<ArrayList<ResourceInfo>> test = new HashSet<>(ResourceInfo.values());
 
-        //Creating an ArrayList of keys by passing the keySet
-        //ArrayList<ResourceInfo> listOfValues = new ArrayList<ResourceInfo>((Collection<? extends ResourceInfo>) Arrays.asList(keySet));
+        List<ArrayList<ResourceInfo>> listTest = test.stream().collect(Collectors.toList());
+
+        for(int i = 0; i < listTest.size(); i++){
+            System.out.println(listTest.get(i));
+            //ResourcesCopy.add();
+        }
+        //ResourcesCopy = listTest;
     }
 
     @Override
     public ArrayList<ResourceInfo> returnDataStorage() throws RemoteException {
+        DivideResources();
         return DataClient;
+    }
+
+    public void ReceivedCombinations(ArrayList<ProcessCombinationModel> combinationStatistics){
+        CombinationModel = combinationStatistics;
     }
 
     public void FillResourcesMap(String path, String fileName, LinkedHashMap<Integer, ArrayList<ResourceInfo>> ResourceInfo) throws HarReaderException {
