@@ -1,4 +1,6 @@
-public class ResourceInfo {
+import java.io.Serializable;
+
+public class ResourceInfo implements Serializable {
     public String resourceType;
     public Float resourceTime;
     public boolean repeatedCall;
