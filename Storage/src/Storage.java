@@ -16,13 +16,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Storage extends UnicastRemoteObject implements StorageInterface {
 
-    private static LinkedHashMap<Integer, ArrayList<ResourceInfo>> MapperResource = new LinkedHashMap<>();
+    private static ArrayList<Integer> MapperResource = new ArrayList<>();
     private static ArrayList<ResourceInfo> ResourceInfoCopy = new ArrayList<>();
     private static LinkedHashMap<Integer, ArrayList<ResourceInfo>> ReducerCombinations = new LinkedHashMap<>();
     private static LinkedHashMap<String, ArrayList<ResourceInfo>> ResourceInfoData = new LinkedHashMap<>();
     private static ArrayList<ProcessCombinationModel> CombinationModel = new ArrayList<>();
 
-    private static LinkedHashMap<Integer, ArrayList<ResourceInfo>> DataClient = new LinkedHashMap<>();
+    private static ArrayList<Integer> DataClient = new ArrayList<>();
 
     private String storageReceivedPath = ".\\Storage\\ReceivedFile\\";
 
@@ -37,7 +37,7 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
 
         File file = new File(storageReceivedPath + filename);
 
-        System.out.println("File name" + file.getName());
+        //System.out.println("File name " + file.getName());
 
         file.createNewFile();
 
@@ -87,23 +87,21 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
      *
      * @return
      */
-    public LinkedHashMap<Integer, ArrayList<ResourceInfo>> DivideResources() {
+    public ArrayList<Integer> DivideResources() {
 
         System.out.println("Starting the division of resources.");
         System.out.println("Resource Info size:" + ResourceInfoData.size());
 
-        Integer sizeResourceInfo = ResourceInfoData.size();
+        /*Integer sizeResourceInfo = ResourceInfoData.size();
         Integer numberItem = sizeResourceInfo / 2;
         Boolean isPar =  (sizeResourceInfo % 2) != 0;
-
-        //private static LinkedHashMap<Integer, ArrayList<ResourceInfo>> MapperResource = new LinkedHashMap<>();
 
         Integer count = 0;
 
         for(int i = 0; i < sizeResourceInfo; i++){
 
             for(int j = 0; j < numberItem; j++) {
-                System.out.println("Entrei no for" + j);
+                System.out.println("Set data to the mapper:" + i);
                 MapperResource.put(i, ResourceInfoData.get(count));
                 count++;
             }
@@ -111,7 +109,7 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
         }
         if(!isPar) {
             MapperResource.put((Integer) MapperResource.keySet().toArray()[1], ResourceInfoData.get(sizeResourceInfo));
-        }
+        }*/
 
         /*ArrayList<ResourceInfo> ResourcesOriginals = new ArrayList<>();
         ArrayList<ResourceInfo> ResourcesCopy = ResourcesOriginals;
@@ -129,41 +127,38 @@ public class Storage extends UnicastRemoteObject implements StorageInterface {
 
         ArrayList<Integer> resourcePorMapper = new ArrayList<>();
         int numMappers= 2;
-        int numResources = copyResources.size();
+        int numResources = ResourceInfoData.size();
 
-        int resourcesPerMapper = numMappers/ resources);
-        int remainingResources = (numItems % numBuckets);
+        int resourcesPerMapper = (numResources / numMappers);
+        int remainingResources = (numResources % 2);
 
         for (int i = 1; i <= numMappers; i++)
         {
             int extra = (i <= remainingResources) ? 1:0;
-            resourcePorMapper.add((itemsPerBucket + extra));
+            resourcePorMapper.add((resourcesPerMapper + extra));
         }
 
         for(int i=0;i<resourcePorMapper.size();i++){
-
-            System.out.println("\nmapper com "+ resourcePorMapper[i] +" recursos");
+            System.out.println("\n <<-- Mapper " + i + " with "+ resourcePorMapper.get(i) +" resources");
         }
 
-        System.out.println("Size of MapperResource" +  MapperResource.size());
-        Set keyset = MapperResource.keySet();
-        Integer valuesKeySet = keyset.size();
-
-        for(Integer i = 0; i < MapperResource.size(); i++) {
-            System.out.println("----> " + MapperResource.get(keyset.toArray()[i]));
-        }
+        MapperResource = resourcePorMapper;
 
         return MapperResource;
     }
 
     @Override
-    public LinkedHashMap<Integer, ArrayList<ResourceInfo>> returnDataStorage() throws RemoteException {
+    public ArrayList<Integer> returnDataStorage() throws RemoteException {
         DataClient = DivideResources();
         return DataClient;
     }
 
     public void ReceivedCombinations(ArrayList<ProcessCombinationModel> combinationStatistics) throws RemoteException{
         CombinationModel = combinationStatistics;
+    }
+
+    public LinkedList<ProcessCombinationModel> getCombinationResults() {
+        return null;
     }
 
     public void FillResourcesMap(String path, String fileName) throws HarReaderException {

@@ -4,7 +4,7 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 public interface StorageInterface  extends Remote {
 
@@ -12,10 +12,11 @@ public interface StorageInterface  extends Remote {
 
     void addFile(String path, String storageAddress) throws IOException, NotBoundException;
 
-    LinkedHashMap<Integer, ArrayList<ResourceInfo>> returnDataStorage() throws RemoteException;
+    ArrayList<Integer> returnDataStorage() throws RemoteException;
 
-    LinkedHashMap<Integer, ArrayList<ResourceInfo>> DivideResources() throws RemoteException;
+    ArrayList<Integer> DivideResources() throws RemoteException;
 
     void ReceivedCombinations(ArrayList<ProcessCombinationModel> combinationStatistics) throws RemoteException;
 
+    //LinkedList<ProcessCombinationModel> getCombinationResults();
 }
